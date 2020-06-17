@@ -257,13 +257,21 @@
 			    alert('좌측 화살키를 누르셨습니다.');
 			  }
 			  else if (event.keyCode == '39') {
-				    alert('우측 화살키를 누르셨습니다.');
+				  	speed = 50
+				  	message = new Paho.MQTT.Message("value:"+ speed);
+					message.destinationName = "/speed";
+					message.qos = 0;
+					sensorClient.send(message);
 				  }
 			  else if (event.keyCode == '38') {
 				    alert('위측 화살키를 누르셨습니다.');
 				  }
 			  else if (event.keyCode == '40') {
-			    alert('아래측 화살키를 누르셨습니다.');
+				    speed = 0
+				  	message = new Paho.MQTT.Message("value:"+ speed);
+					message.destinationName = "/speed";
+					message.qos = 0;
+					sensorClient.send(message);
 			  }
 			});
 		
