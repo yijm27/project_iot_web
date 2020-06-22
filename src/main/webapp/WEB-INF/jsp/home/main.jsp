@@ -38,6 +38,7 @@
 			<li><a href="exam17_css.do">exam17_css.do</a></li>
 			<li><a href="exam18_layout.do">exam18_layout.do</a></li>
 			<li><a href="exam19_mqtt.do">exam19_mqtt.do</a></li>
+			<li><a href="test_div_boot.do">test_div_boot.do</a></li>
 		</ul>	
 	</body>
 </html>

@@ -1,8 +1,10 @@
 package com.mycompany.project.controller;
 
 import java.io.PrintWriter;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,6 +13,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
@@ -157,6 +160,14 @@ public class HomeController {
 		
 		return "home/exam19_mqtt";
 	}
+	
+	@RequestMapping("/test_div_boot.do")
+	public String test_div_boot() {
+		LOGGER.info("실행");
+		
+		
+		return "home/test_div_boot";
+	}
 	@RequestMapping("/ajaxContent2.do")
 	public void ajaxContent2(HttpServletResponse response) throws Exception {
 		LOGGER.info("실행");
@@ -210,6 +221,29 @@ public class HomeController {
 		pw.flush();
 		pw.close();
 		
+	}
+	
+	///////////////////////////////////////////////////////////////////////////
+	
+	
+	@RequestMapping("/exam04Data.do")
+	public String exam04Data(Model model) {
+		Calendar now = Calendar.getInstance();
+		//날짜는 반드시 UTC 시간으로 보내줘야 한다.
+		Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+		cal.set(
+			now.get(Calendar.YEAR), 
+			now.get(Calendar.MONTH+1), 
+			now.get(Calendar.DATE), 
+			now.get(Calendar.HOUR_OF_DAY), 
+			now.get(Calendar.MINUTE), 
+			now.get(Calendar.SECOND)
+		);
+		long x = cal.getTimeInMillis();
+		int y = (int)(Math.random()*100); //온도나 거리를 일단 랜덤값으로 준것.
+		model.addAttribute("x", x);
+		model.addAttribute("y", y);
+		return "/home/exam04Data"; 
 	}
 	
 

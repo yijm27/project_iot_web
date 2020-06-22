@@ -15,7 +15,15 @@
 		<script src="${pageContext.request.contextPath}/resource/jquery-ui/jquery-ui.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
 		
-		
+		<script src="${pageContext.request.contextPath}/resource/highcharts/code/highcharts.js"></script>
+		<script src="${pageContext.request.contextPath}/resource/highcharts/code/themes/gray.js"></script>
+
+	<style>
+	html, body {
+		height: "100%";
+    	width: "100%";
+	}
+	</style>
 		<script>
 			speed = 0
 			//센서 구독자
@@ -42,8 +50,8 @@
 				if(message.destinationName == "/temperature_photo"){
 					//가정  {"temperature": 값, "gas":값}
 					var obj = JSON.parse(message.payloadString);
-					var temperatureValue = obj.temperature;
-					var photoValue = obj.photo;
+					temperatureValue = obj.temperature;
+					photoValue = obj.photo;
 					$("#sensordata #temperature").attr("value", temperatureValue);
 					$("#sensordata #photo").attr("value", photoValue);
 					
@@ -278,56 +286,131 @@
 		
 		
 		
-		</script>
+		</script> 
+		<script> 
+		// 실시간에 대한 내용이 나와있는 문서.
+		var chart;
+		function requestData() {
+		    $.ajax({
+		        url: 'exam04Data',
+		        success: function(point) {
+		        	point[1] = temperatureValue
+		            var series = chart.series[0];
+		            var shift = series.data.length > 20;
+		            chart.series[0].addPoint(point, true, shift);
+		            setTimeout(requestData, 1000);    
+		        },
+		        cache: false
+		    });
+		}
+		$(function() {
+		    chart = new Highcharts.Chart({
+		        chart: {
+		            renderTo: 'container',
+		            defaultSeriesType: 'spline',
+		            events: {
+		                load: requestData
+		            }
+		        },
+		        title: {
+		            text: 'Live random data'
+		        },
+		        xAxis: {
+		            type: 'datetime',
+		            tickPixelInterval: 100,
+		            maxZoom: 20 * 1000
+		        },
+		        yAxis: {
+		            minPadding: 0.2,
+		            maxPadding: 0.2,
+		            title: {
+		                text: 'Value',
+		                margin: 80
+		            }
+		        },
+		        series: [{
+		            name: 'Random data',
+		            data: []
+		        }]
+		    });
+		});		
 		
+		var chart2;
+		function requestData2() {
+		    $.ajax({
+		        url: 'exam04Data',
+		        success: function(point) {
+		            var series = chart.series[0];
+		            var shift = series.data.length > 20;
+		            chart2.series[0].addPoint(point, true, shift);
+		            setTimeout(requestData2, 2000);    //매 1초 단위로 자기 자신을 다시 호출하는 함수.
+		            //혹은 setInterval을 써도 됨.
+		        },
+		        cache: false
+		    });
+		}
+		$(function() {
+		    chart2 = new Highcharts.Chart({
+		        chart: {
+		            renderTo: 'container2',
+		            defaultSeriesType: 'spline',
+		            events: {
+		                load: requestData2
+		            }
+		        },
+		        title: {
+		            text: 'Live random data'
+		        },
+		        xAxis: {
+		            type: 'datetime',
+		            tickPixelInterval: 100,
+		            maxZoom: 20 * 1000
+		        },
+		        yAxis: {
+		            minPadding: 0.2,
+		            maxPadding: 0.2,
+		            title: {
+		                text: 'Value',
+		                margin: 80
+		            }
+		        },
+		        series: [{
+		            name: 'Random data',
+		            data: []
+		        }]
+		    });
+		});			
+	</script>
 		
-		
-		
+	
 	</head>
 	<body>
 		<h5 class="alert alert-info">/home/exam19_mqtt.jsp</h5>
-		
-				
-		<div id="sensordata">
-			<table>
-				<tr>
-					<th>온도 </th>
-				</tr>
-				<tr>
-					<td><input id="temperature" type="text" value=""/></td>
-				</tr>
-				<tr>
-					<th>포토</th>
-				</tr>
-				<tr>
-					<td><input id="photo" type="text" value=""/></td>
-				</tr>
-				<tr>
-					<th>게스 </th>
-				</tr>
-				<tr>
-					<td><input id="gas" type="text" value=""/></td>
-				</tr>
-				
-				<tr>
-					<th>초음파</th>
-				</tr>
-				<tr>
-					<td><input id="ultraSonic" type="text" value=""/></td>
-				</tr>
-				<tr>
-					<th>트래킹</th>
-				</tr>
-				<tr>
-					<td><input id="tracking" type="text" value=""/></td>
-				</tr>
-				
-				
-			</table>
-		</div>
-		<div>
+	<div style="width: 100%;height: 100%;background-color: blue;">
 			<img id="cameraView"/>
+	
+		<div id="what2" style="width:400px; height:400px;"></div>		
+		<div id="what">
+			<div id="sensordata" class="container">
+				<div class="row">
+					<div class="col-xs-2 col-sm-2" style="text-align:center">온도</div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center">포토</div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center">가스</div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center">초음파</div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center">트래킹</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-2 col-sm-2" style="text-align:center;"><input id="temperature" type="text" value=""/></div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center;"><input id="photo" type="text" value=""/></div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center;"><input id="gas" type="text" value=""/></div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center;"><input id="ultraSonic" type="text" value=""/></div>
+					<div class="col-xs-2 col-sm-2" style="text-align:center;"><input id="tracking" type="text" value=""/></div>
+				</div>
+			</div>
 		</div>
+				
+			
+		
 		<div>
 	  		DC모터
 	  		<input id="speed" name="speed" type="text" />
@@ -377,6 +460,6 @@
 	  		LedOff
 	  		<input class="togglebtn" onclick="ledOff()" type="button" value="ledOff" />
 	  	</div>
-
+	</div>
 	</body>
 </html>
